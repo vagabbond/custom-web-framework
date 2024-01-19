@@ -1,16 +1,20 @@
-import { User } from "./models/User";
+import { UserList } from './views/UserList';
+import { Collection } from './models/Collection';
+import { UserProps, User } from './models/User';
 
-const user = new User({ id: 1 });
-// user.fetch();
+const users = new Collection(
+  'http://localhost:3000/users',
+  (json: UserProps) => {
+    return User.buildUser(json);
+  }
+);
 
-user.set({ name: "Lou", age: 3355 });
-user.save();
+users.on('change', () => {
+  const root = document.getElementById('root');
 
-// console.log(user.get("name"));
-// console.log(user.get("age"));
+  if (root) {
+    new UserList(root, users).render();
+  }
+});
 
-// user.on("change", () => {
-//  console.log("adadaf");
-// });
-
-// user.trigger("change");
+users.fetch();
